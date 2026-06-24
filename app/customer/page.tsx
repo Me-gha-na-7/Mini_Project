@@ -22,7 +22,6 @@ export default function CustomerPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load tickets from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('supportTickets');
     if (saved) {
@@ -53,53 +52,45 @@ export default function CustomerPage() {
     setTimeout(() => setSubmitted(false), 5000);
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityBg = (priority: string) => {
     switch (priority) {
       case 'High':
-        return 'bg-red-100 text-red-800 border border-red-300';
+        return 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
+        return 'linear-gradient(135deg, #eab308 0%, #facc15 100%)';
       case 'Low':
-        return 'bg-green-100 text-green-800 border border-green-300';
-      default:
-        return '';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Open':
-        return 'text-blue-600';
-      case 'In Progress':
-        return 'text-orange-600';
-      case 'Resolved':
-        return 'text-green-600';
+        return 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)';
       default:
         return '';
     }
   };
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12 text-gray-900 font-bold text-lg">Loading...</div>;
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">Submit a Support Ticket</h1>
-        <p className="text-lg text-slate-600">
+      <div 
+        className="rounded-2xl p-10 shadow-2xl"
+        style={{
+          background: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+        }}
+      >
+        <h1 className="text-5xl font-bold text-white mb-3">Submit a Support Ticket</h1>
+        <p className="text-xl text-white font-bold">
           Tell us what's wrong. We'll get back to you as soon as possible.
         </p>
       </div>
 
       {/* Success Message */}
       {submitted && (
-        <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <CheckCircle className="w-5 h-5 text-green-600" />
+        <div className="flex items-center gap-3 p-6 bg-green-100 border-4 border-green-500 rounded-xl shadow-lg">
+          <CheckCircle className="w-8 h-8 text-green-700 flex-shrink-0" />
           <div>
-            <h3 className="font-semibold text-green-900">Ticket submitted!</h3>
-            <p className="text-sm text-green-700">
+            <h3 className="font-black text-green-900 text-lg">✅ Ticket submitted!</h3>
+            <p className="text-green-800 font-bold">
               We'll review your ticket and get back to you shortly.
             </p>
           </div>
@@ -107,10 +98,15 @@ export default function CustomerPage() {
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
+      <form onSubmit={handleSubmit} 
+        className="rounded-2xl shadow-2xl p-10 space-y-6"
+        style={{
+          background: 'linear-gradient(135deg, #dbeafe 0%, #fce7f3 50%, #e0e7ff 100%)',
+        }}
+      >
         {/* Title */}
         <div>
-          <label className="block text-sm font-semibold text-slate-900 mb-2">
+          <label className="block text-lg font-black text-gray-900 mb-3">
             Ticket Title *
           </label>
           <input
@@ -119,13 +115,13 @@ export default function CustomerPage() {
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             placeholder="Brief summary of your issue"
-            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-5 py-4 border-4 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-lg font-bold bg-white"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-semibold text-slate-900 mb-2">
+          <label className="block text-lg font-black text-gray-900 mb-3">
             Description *
           </label>
           <textarea
@@ -136,13 +132,13 @@ export default function CustomerPage() {
             }
             placeholder="Describe your issue in detail..."
             rows={6}
-            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full px-5 py-4 border-4 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-lg font-bold resize-none bg-white"
           />
         </div>
 
         {/* Priority */}
         <div>
-          <label className="block text-sm font-semibold text-slate-900 mb-2">
+          <label className="block text-lg font-black text-gray-900 mb-3">
             Priority *
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -151,10 +147,15 @@ export default function CustomerPage() {
                 key={p}
                 type="button"
                 onClick={() => setFormData({ ...formData, priority: p })}
-                className={`py-3 px-4 rounded-lg font-medium border-2 transition ${
+                style={
                   formData.priority === p
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                    ? { background: getPriorityBg(p) }
+                    : {}
+                }
+                className={`py-4 px-4 rounded-xl font-black border-4 transition text-base transform hover:scale-105 ${
+                  formData.priority === p
+                    ? 'text-white border-current shadow-lg'
+                    : 'border-gray-400 bg-white text-gray-900 hover:border-gray-600'
                 }`}
               >
                 {p}
@@ -167,34 +168,61 @@ export default function CustomerPage() {
         <button
           type="submit"
           disabled={!formData.title || !formData.description}
-          className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-slate-400 transition"
+          style={{
+            background: !formData.title || !formData.description 
+              ? '#d1d5db'
+              : 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+          }}
+          className="w-full py-4 px-6 text-white font-black rounded-xl transition text-lg shadow-lg transform hover:scale-105 disabled:scale-100"
         >
-          Submit Ticket
+          Submit Ticket 🚀
         </button>
       </form>
 
       {/* Your Tickets */}
       {tickets.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">Your Tickets</h2>
+          <h2 className="text-3xl font-black text-gray-900 mb-6">Your Tickets</h2>
           <div className="space-y-4">
-            {tickets.map((ticket) => (
-              <div key={ticket.id} className="bg-white rounded-xl shadow p-6 border-l-4 border-blue-500">
+            {tickets.map((ticket, idx) => (
+              <div 
+                key={ticket.id} 
+                className="rounded-xl shadow-lg p-6 border-l-4 border-blue-500"
+                style={{
+                  background: idx % 3 === 0 
+                    ? 'linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%)'
+                    : idx % 3 === 1
+                    ? 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)'
+                    : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                }}
+              >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">{ticket.title}</h3>
-                    <p className="text-sm text-slate-600">{ticket.createdAt}</p>
+                    <h3 className="text-xl font-black text-gray-900">{ticket.title}</h3>
+                    <p className="text-sm text-gray-700 font-bold mt-1">🕐 {ticket.createdAt}</p>
                   </div>
                   <div className="flex gap-2">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(ticket.priority)}`}>
+                    <span 
+                      className="px-3 py-1 rounded-full text-sm font-black text-white"
+                      style={{ background: getPriorityBg(ticket.priority) }}
+                    >
                       {ticket.priority}
                     </span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium border border-slate-300 ${getStatusColor(ticket.status)}`}>
+                    <span 
+                      className="px-3 py-1 rounded-full text-sm font-black text-white border-2 border-gray-400"
+                      style={{
+                        background: ticket.status === 'Open'
+                          ? 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)'
+                          : ticket.status === 'In Progress'
+                          ? 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)'
+                          : 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+                      }}
+                    >
                       {ticket.status}
                     </span>
                   </div>
                 </div>
-                <p className="text-slate-700">{ticket.description}</p>
+                <p className="text-gray-800 font-bold">{ticket.description}</p>
               </div>
             ))}
           </div>
@@ -203,9 +231,9 @@ export default function CustomerPage() {
 
       {/* Empty State */}
       {tickets.length === 0 && !submitted && (
-        <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-slate-300">
-          <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-          <p className="text-slate-600">No tickets yet. Submit one above to get started!</p>
+        <div className="text-center py-12 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl border-4 border-dashed border-purple-400">
+          <AlertCircle className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-900 font-black text-lg">No tickets yet. Submit one to get started! 🎉</p>
         </div>
       )}
     </div>

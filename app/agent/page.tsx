@@ -18,7 +18,6 @@ export default function AgentPage() {
   const [filter, setFilter] = useState<'All' | 'Open' | 'In Progress' | 'Resolved'>('All');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // Load tickets from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('supportTickets');
     if (saved) {
@@ -45,49 +44,54 @@ export default function AgentPage() {
     filter === 'All' ? true : t.status === filter
   );
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityBg = (priority: string) => {
     switch (priority) {
       case 'High':
-        return 'bg-red-100 text-red-800 border border-red-300';
+        return 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)';
       case 'Medium':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-300';
+        return 'linear-gradient(135deg, #eab308 0%, #facc15 100%)';
       case 'Low':
-        return 'bg-green-100 text-green-800 border border-green-300';
+        return 'linear-gradient(135deg, #22c55e 0%, #4ade80 100%)';
       default:
         return '';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBg = (status: string) => {
     switch (status) {
       case 'Open':
-        return 'bg-blue-100 text-blue-800 border border-blue-300';
+        return 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)';
       case 'In Progress':
-        return 'bg-orange-100 text-orange-800 border border-orange-300';
+        return 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)';
       case 'Resolved':
-        return 'bg-green-100 text-green-800 border border-green-300';
+        return 'linear-gradient(135deg, #10b981 0%, #34d399 100%)';
       default:
         return '';
     }
   };
 
   const stats = [
-    { label: 'Total Tickets', value: tickets.length, color: 'blue' },
-    { label: 'Open', value: tickets.filter((t) => t.status === 'Open').length, color: 'blue' },
-    { label: 'In Progress', value: tickets.filter((t) => t.status === 'In Progress').length, color: 'orange' },
-    { label: 'Resolved', value: tickets.filter((t) => t.status === 'Resolved').length, color: 'green' },
+    { label: 'Total Tickets', value: tickets.length, gradient: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)' },
+    { label: 'Open', value: tickets.filter((t) => t.status === 'Open').length, gradient: 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)' },
+    { label: 'In Progress', value: tickets.filter((t) => t.status === 'In Progress').length, gradient: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)' },
+    { label: 'Resolved', value: tickets.filter((t) => t.status === 'Resolved').length, gradient: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)' },
   ];
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12 text-gray-900 font-bold text-lg">Loading...</div>;
   }
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">Agent Dashboard</h1>
-        <p className="text-lg text-slate-600">
+      <div 
+        className="rounded-2xl p-10 shadow-2xl"
+        style={{
+          background: 'linear-gradient(135deg, #f43f5e 0%, #ec4899 100%)',
+        }}
+      >
+        <h1 className="text-5xl font-bold text-white mb-3">Agent Dashboard</h1>
+        <p className="text-xl text-white font-bold">
           Manage support tickets and keep customers happy.
         </p>
       </div>
@@ -97,12 +101,13 @@ export default function AgentPage() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`bg-${stat.color}-50 border border-${stat.color}-200 rounded-lg p-6`}
+            className="rounded-xl p-8 shadow-lg text-white transform hover:scale-105 transition"
+            style={{ background: stat.gradient }}
           >
-            <p className={`text-sm font-medium text-${stat.color}-700 mb-1`}>
+            <p className="text-sm font-black mb-2">
               {stat.label}
             </p>
-            <p className={`text-3xl font-bold text-${stat.color}-900`}>
+            <p className="text-4xl font-black">
               {stat.value}
             </p>
           </div>
@@ -115,10 +120,15 @@ export default function AgentPage() {
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
+            style={
               filter === f
-                ? 'bg-blue-600 text-white'
-                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                ? { background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }
+                : {}
+            }
+            className={`px-6 py-3 rounded-xl font-black transition text-base transform hover:scale-105 ${
+              filter === f
+                ? 'text-white shadow-lg'
+                : 'bg-white border-4 border-gray-400 text-gray-900 hover:border-gray-600'
             }`}
           >
             {f}
@@ -129,31 +139,41 @@ export default function AgentPage() {
       {/* Tickets List */}
       {filteredTickets.length > 0 ? (
         <div className="space-y-4">
-          {filteredTickets.map((ticket) => (
+          {filteredTickets.map((ticket, idx) => (
             <div
               key={ticket.id}
-              className="bg-white rounded-xl shadow border border-slate-200 overflow-hidden hover:shadow-lg transition"
+              className="rounded-xl shadow-lg border-4 border-blue-300 overflow-hidden hover:shadow-2xl transition"
+              style={{
+                background: idx % 3 === 0
+                  ? 'linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%)'
+                  : idx % 3 === 1
+                  ? 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)'
+                  : 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+              }}
             >
               {/* Ticket Header (Always Visible) */}
               <div
-                className="p-6 cursor-pointer flex items-start justify-between"
+                className="p-6 cursor-pointer flex items-start justify-between hover:bg-white hover:bg-opacity-30 transition"
                 onClick={() =>
                   setExpandedId(expandedId === ticket.id ? null : ticket.id)
                 }
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
-                    <h3 className="text-lg font-bold text-slate-900">
+                    <h3 className="text-2xl font-black text-gray-900">
                       {ticket.title}
                     </h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(ticket.priority)}`}>
+                    <span 
+                      className="px-3 py-1 rounded-full text-xs font-black text-white shadow-lg"
+                      style={{ background: getPriorityBg(ticket.priority) }}
+                    >
                       {ticket.priority}
                     </span>
                   </div>
-                  <p className="text-sm text-slate-600">{ticket.createdAt}</p>
+                  <p className="text-sm text-gray-700 font-bold">🕐 {ticket.createdAt}</p>
                 </div>
                 <ChevronDown
-                  className={`w-5 h-5 text-slate-500 transition ${
+                  className={`w-8 h-8 text-gray-800 transition font-black ${
                     expandedId === ticket.id ? 'rotate-180' : ''
                   }`}
                 />
@@ -161,31 +181,32 @@ export default function AgentPage() {
 
               {/* Ticket Details (Expandable) */}
               {expandedId === ticket.id && (
-                <div className="border-t border-slate-200 p-6 bg-slate-50 space-y-4">
+                <div className="border-t-4 border-gray-300 p-6 bg-white bg-opacity-50 space-y-4">
                   {/* Description */}
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-2">
-                      Description
-                    </h4>
-                    <p className="text-slate-700 whitespace-pre-wrap">
+                    <h4 className="font-black text-gray-900 mb-2 text-lg">📝 Description</h4>
+                    <p className="text-gray-800 whitespace-pre-wrap font-bold text-base">
                       {ticket.description}
                     </p>
                   </div>
 
                   {/* Status Selection */}
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-3">
-                      Update Status
-                    </h4>
+                    <h4 className="font-black text-gray-900 mb-3 text-lg">🔄 Update Status</h4>
                     <div className="grid grid-cols-3 gap-2">
                       {(['Open', 'In Progress', 'Resolved'] as const).map((s) => (
                         <button
                           key={s}
                           onClick={() => updateTicketStatus(ticket.id, s)}
-                          className={`py-2 px-3 rounded-lg text-sm font-medium transition border-2 ${
+                          style={
                             ticket.status === s
-                              ? `${getStatusColor(s)} border-current`
-                              : 'bg-white border-slate-300 text-slate-700 hover:border-slate-400'
+                              ? { background: getStatusBg(s) }
+                              : {}
+                          }
+                          className={`py-3 px-3 rounded-xl text-sm font-black transition border-4 transform hover:scale-105 ${
+                            ticket.status === s
+                              ? 'text-white border-white shadow-lg'
+                              : 'bg-white border-gray-400 text-gray-900 hover:border-gray-600'
                           }`}
                         >
                           {s}
@@ -195,12 +216,15 @@ export default function AgentPage() {
                   </div>
 
                   {/* Delete Button */}
-                  <div className="pt-4 border-t border-slate-300">
+                  <div className="pt-4 border-t-4 border-gray-300">
                     <button
                       onClick={() => deleteTicket(ticket.id)}
-                      className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition font-medium"
+                      style={{
+                        background: 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)',
+                      }}
+                      className="flex items-center gap-2 px-5 py-3 text-white font-black rounded-xl transition border-4 border-red-700 transform hover:scale-105 shadow-lg"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-5 h-5" />
                       Delete Ticket
                     </button>
                   </div>
@@ -210,8 +234,12 @@ export default function AgentPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-slate-300">
-          <p className="text-slate-600 text-lg">
+        <div className="text-center py-12 rounded-2xl border-4 border-dashed border-green-400"
+          style={{
+            background: 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
+          }}
+        >
+          <p className="text-gray-900 text-lg font-black">
             {filter === 'All'
               ? 'No tickets yet. Great job! 🎉'
               : `No ${filter.toLowerCase()} tickets right now.`}
